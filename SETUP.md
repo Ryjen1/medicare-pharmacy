@@ -287,6 +287,81 @@ After setting up all credentials:
 - Check the Resend dashboard at [resend.com/emails](https://resend.com/emails) for delivery logs
 - For Mailgun, check that recipient emails are authorized (for sandbox domains)
 
+## Deploy to Vercel
+
+Deploy your MediCare Pharmacy to production with Vercel (recommended for Next.js apps).
+
+### Step 1: Push to GitHub
+
+Your code is already pushed to: https://github.com/Ryjen1/medicare-pharmacy
+
+### Step 2: Import to Vercel
+
+1. Go to https://vercel.com/new
+2. Click **"Import Git Repository"**
+3. Select `medicare-pharmacy` from your GitHub repos
+4. Click **"Import"**
+
+### Step 3: Configure Environment Variables
+
+In the Vercel deployment page, add these environment variables.
+
+**Copy values from your local `.env.local` file (open it in a text editor):**
+
+| Variable Name | Value (from your .env.local) |
+|--------------|------------------------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
+| `MAILGUN_API_KEY` | Your Resend API key (starts with `re_`) |
+| `MAILGUN_DOMAIN` | `mg.yourdomain.com` (not used by Resend) |
+| `MAILGUN_FROM` | `MediCare <onboarding@resend.dev>` |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` (update after deploy) |
+
+**How to add in Vercel:**
+1. Scroll to **"Environment Variables"** section
+2. Add each variable one by one:
+   - **Name**: (paste from table above)
+   - **Value**: (copy from your `.env.local` file)
+   - **Environment**: Production, Preview, Development (select all three)
+   - Click **"Add"**
+3. Repeat for all 7 variables
+
+**Quick tip:** Open your `.env.local` file and copy each value to paste into Vercel.
+
+### Step 4: Deploy
+
+1. Click **"Deploy"** button
+2. Wait for build to complete (2-3 minutes)
+3. Your app will be live at: `https://medicare-pharmacy-[your-username].vercel.app`
+
+### Step 5: Update Site URL
+
+After deployment:
+1. Copy your Vercel URL (e.g., `https://medicare-pharmacy-abc123.vercel.app`)
+2. Go to Vercel Dashboard → Your Project → **Settings** → **Environment Variables**
+3. Edit `NEXT_PUBLIC_SITE_URL` and paste your Vercel URL
+4. Go to **Deployments** → Latest deployment → **"Redeploy"** (check "Use existing Build Cache" = OFF)
+
+### Step 6: Update Supabase Callback URL
+
+For email confirmations to work:
+1. Go to Supabase Dashboard → **Authentication** → **URL Configuration**
+2. Add your Vercel URL to **"Redirect URLs"**:
+   ```
+   https://your-app.vercel.app/auth/callback
+   ```
+3. Save changes
+
+### Do I Need Render?
+
+**No!** You don't need Render because:
+- **Vercel** handles your Next.js frontend (automatic deployments, CDN, edge functions)
+- **Supabase** handles your backend (database, authentication, storage)
+- **Resend** handles email delivery
+
+This is a serverless architecture — no separate backend server needed.
+
 ## Quick Links
 
 - [Supabase Dashboard](https://supabase.com/dashboard)
