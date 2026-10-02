@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --pharmacy-blue: #0066cc;
+  --pharmacy-green: #00a86b;
+  --pharmacy-light: #e8f4f8;
+}
+
+html, body {
+  background: linear-gradient(to bottom, #f0f9ff 0%, #fafafa 100%);
+  color: #111827;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-white font-semibold shadow-md hover:from-blue-700 hover:to-blue-800 hover:shadow-lg transition-all duration-200 disabled:opacity-50;
+}
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-lg border-2 border-blue-600 bg-white px-5 py-2.5 text-blue-600 font-semibold hover:bg-blue-50 transition-all duration-200;
+}
+.input {
+  @apply w-full rounded-lg border-2 border-gray-300 px-4 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all;
+}
+.label {
+  @apply block text-sm font-semibold text-gray-700 mb-1.5;
+}
+.card {
+  @apply rounded-xl border border-gray-200 bg-white shadow-md hover:shadow-xl transition-all duration-300;
+}
