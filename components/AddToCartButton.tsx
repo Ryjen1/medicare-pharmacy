@@ -14,7 +14,6 @@ export default function AddToCartButton({ product }: { product: Product }) {
       name: product.name,
       unit_price_cents: product.price_cents,
       image_url: product.image_url,
-      quantity: 1,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
