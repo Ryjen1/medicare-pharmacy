@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useCart } from '../contexts/CartContext';
 
 function formatPrice(cents: number) {
@@ -14,7 +15,13 @@ function formatPrice(cents: number) {
 }
 
 export default function CartScreen() {
-  const { items, update, remove, total_cents, count } = useCart();
+  const { items, update, remove, total_cents, count, refetch } = useCart();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   if (count === 0) {
     return (

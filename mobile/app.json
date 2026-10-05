@@ -25,8 +25,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "9e4b78d6-9065-4ec6-a7db-fbe86bb5a601"
       }
-    }
+    },
+    "owner": "yukay"
   }
 }

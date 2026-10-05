@@ -65,8 +65,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        fetchCart();
+      }
+    }
+    function onFocus() {
+      fetchCart();
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("focus", onFocus);
+
     return () => {
       subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("focus", onFocus);
     };
   }, [fetchCart, supabase]);
 
@@ -107,7 +120,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       loading,
       add: async (item, qty = 1) => {
         const { data: { user } } = await supabase.auth.getUser();
+        console.log("Cart add - user:", user?.email ?? "NOT LOGGED IN");
         if (!user) {
+          console.log("Cart add - saving to localStorage only (no user)");
           setItems((prev) => {
             const existing = prev.find((p) => p.product_id === item.product_id);
             if (existing) {
@@ -123,7 +138,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const existing = items.find((p) => p.product_id === item.product_id);
         const newQty = existing ? existing.quantity + qty : qty;
 
-        await supabase.from("cart_items").upsert(
+        const { data, error } = await supabase.from("cart_items").upsert(
           {
             user_id: user.id,
             product_id: item.product_id,
@@ -134,6 +149,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           },
           { onConflict: "user_id,product_id" }
         );
+        if (error) {
+          console.error("Cart upsert error:", error);
+        }
 
         setItems((prev) => {
           const exists = prev.find((p) => p.product_id === item.product_id);

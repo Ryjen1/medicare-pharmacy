@@ -17,6 +17,7 @@ type CartContextType = {
   remove: (productId: string) => Promise<void>;
   update: (productId: string, qty: number) => Promise<void>;
   clear: () => Promise<void>;
+  refetch: () => Promise<void>;
   total_cents: number;
   count: number;
 };
@@ -111,7 +112,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <CartContext.Provider value={{ items, loading, add, remove, update, clear, total_cents, count }}>
+    <CartContext.Provider value={{ items, loading, add, remove, update, clear, refetch: fetchCart, total_cents, count }}>
       {children}
     </CartContext.Provider>
   );
