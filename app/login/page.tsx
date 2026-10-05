@@ -60,7 +60,7 @@ export default function LoginPage() {
             <div>
               <p className="text-sm font-semibold text-gray-900">Email Confirmation</p>
               <p className="text-xs text-gray-600 mt-1">
-                After signing up, check your email for a confirmation link. Powered by Resend for reliable delivery.
+                After signing up, check your email for a confirmation link.
               </p>
             </div>
           </div>

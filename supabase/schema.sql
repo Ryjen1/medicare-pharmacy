@@ -63,7 +63,46 @@ create table if not exists public.order_items (
 create index if not exists order_items_order_id_idx on public.order_items(order_id);
 create index if not exists orders_user_id_idx on public.orders(user_id);
 
--- 5. Row Level Security
+-- 5. Cart items table (for cross-device cart sync)
+create table if not exists public.cart_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  product_id text not null,
+  name text not null,
+  unit_price_cents integer not null check (unit_price_cents >= 0),
+  image_url text not null,
+  quantity integer not null default 1 check (quantity > 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(user_id, product_id)
+);
+
+create index if not exists cart_items_user_id_idx on public.cart_items(user_id);
+
+alter table public.cart_items enable row level security;
+
+drop policy if exists "users read own cart" on public.cart_items;
+create policy "users read own cart"
+  on public.cart_items for select using (auth.uid() = user_id);
+
+drop policy if exists "users insert own cart" on public.cart_items;
+create policy "users insert own cart"
+  on public.cart_items for insert with check (auth.uid() = user_id);
+
+drop policy if exists "users update own cart" on public.cart_items;
+create policy "users update own cart"
+  on public.cart_items for update using (auth.uid() = user_id);
+
+drop policy if exists "users delete own cart" on public.cart_items;
+create policy "users delete own cart"
+  on public.cart_items for delete using (auth.uid() = user_id);
+
+drop trigger if exists cart_items_set_updated_at on public.cart_items;
+create trigger cart_items_set_updated_at
+  before update on public.cart_items
+  for each row execute function public.set_updated_at();
+
+-- 6. Row Level Security
 alter table public.profiles enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
@@ -102,7 +141,7 @@ create policy "order items readable via order"
 -- Inserts/updates happen only via the server action using the SERVICE ROLE key
 -- so no insert/update policies are defined for anon/authenticated.
 
--- 6. Seed data - Pharmacy Products
+-- 7. Seed data - Pharmacy Products
 insert into public.products (name, description, price_cents, image_url, stock) values
   ('Vitamin D3 5000 IU', 'High-potency vitamin D3 for immune support and bone health. 120 softgels.', 2499, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800', 45),
   ('Omega-3 Fish Oil', 'Premium fish oil with EPA & DHA for heart and brain health. 90 capsules.', 3299, 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=800', 38),
